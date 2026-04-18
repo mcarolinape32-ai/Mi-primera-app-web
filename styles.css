@@ -1,0 +1,101 @@
+:root{
+  --pink:#ff9ecf;
+  --purple:#a78bfa;
+}
+
+body{
+  margin:0;
+  font-family:'Segoe UI', sans-serif;
+  background:linear-gradient(135deg,#ffd6e7,#e0c3fc);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+}
+
+.app{
+  width:360px;
+  background:rgba(255,255,255,0.9);
+  border-radius:25px;
+  padding:20px;
+  box-shadow:0 20px 50px rgba(0,0,0,0.2);
+  text-align:center;
+}
+
+h1{
+  color:#ff4da6;
+}
+
+.calendar input{
+  width:90%;
+  padding:8px;
+  border-radius:10px;
+  border:1px solid #ddd;
+}
+
+.day-block{
+  margin-top:15px;
+}
+
+input{
+  width:65%;
+  padding:8px;
+  border-radius:10px;
+  border:1px solid #ddd;
+}
+
+button{
+  padding:8px;
+  border:none;
+  border-radius:10px;
+  background:linear-gradient(135deg,var(--pink),var(--purple));
+  color:white;
+  cursor:pointer;
+}
+
+ul{
+  list-style:none;
+  padding:0;
+}
+
+li{
+  background:#ffe4f0;
+  margin-top:8px;
+  padding:10px;
+  border-radius:12px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+li:hover{
+  transform:scale(1.03);
+}
+
+.completed{
+  text-decoration:line-through;
+  background:#d8b4fe;
+}
+
+.pop{
+  animation:pop 0.4s ease;
+}
+
+@keyframes pop{
+  0%{transform:scale(1);} 
+  50%{transform:scale(1.2);} 
+  100%{transform:scale(1);} 
+}
+
+.heart{
+  position:fixed;
+  font-size:20px;
+  animation:floatUp 1s ease forwards;
+}
+
+@keyframes floatUp{
+  0%{opacity:1; transform:translateY(0);} 
+  100%{opacity:0; transform:translateY(-80px);} 
+}
