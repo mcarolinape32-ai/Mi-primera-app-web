@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dream Planner ✨</title>
+
+<style>
+:root{
+  --pink:#ff9ecf;
+  --purple:#a78bfa;
+}
+
+body{
+  margin:0;
+  font-family:'Segoe UI', sans-serif;
+  background:linear-gradient(135deg,#ffd6e7,#e0c3fc);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+}
+
+.app{
+  width:360px;
+  background:rgba(255,255,255,0.9);
+  border-radius:25px;
+  padding:20px;
+  box-shadow:0 20px 50px rgba(0,0,0,0.2);
+  text-align:center;
+}
+
+h1{
+  color:#ff4da6;
+}
+
+.calendar input{
+  width:90%;
+  padding:8px;
+  border-radius:10px;
+  border:1px solid #ddd;
+}
+
+.day-block{
+  margin-top:15px;
+}
+
+input{
+  width:65%;
+  padding:8px;
+  border-radius:10px;
+  border:1px solid #ddd;
+}
+
+button{
+  padding:8px;
+  border:none;
+  border-radius:10px;
+  background:linear-gradient(135deg,var(--pink),var(--purple));
+  color:white;
+  cursor:pointer;
+}
+
+ul{
+  list-style:none;
+  padding:0;
+}
+
+li{
+  background:#ffe4f0;
+  margin-top:8px;
+  padding:10px;
+  border-radius:12px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+li:hover{
+  transform:scale(1.03);
+}
+
+.completed{
+  text-decoration:line-through;
+  background:#d8b4fe;
+}
+
+/* ✨ ANIMACIÓN AL COMPLETAR */
+.pop{
+  animation:pop 0.4s ease;
+}
+
+@keyframes pop{
+  0%{transform:scale(1);} 
+  50%{transform:scale(1.2);} 
+  100%{transform:scale(1);} 
+}
+
+/* 💖 corazones flotando */
+.heart{
+  position:fixed;
+  font-size:20px;
+  animation:floatUp 1s ease forwards;
+}
+
+@keyframes floatUp{
+  0%{opacity:1; transform:translateY(0);} 
+  100%{opacity:0; transform:translateY(-80px);} 
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="app">
+  <h1>Dream Planner ✨</h1>
+
+  <div class="calendar">
+    <input type="date" id="datePicker" onchange="changeDay()">
+  </div>
+
+  <div id="dayContainer"></div>
+</div>
+
+<script>
+let selectedDate = localStorage.getItem('selectedDate') || new Date().toISOString().split('T')[0];
+let data = JSON.parse(localStorage.getItem('calendarTasks')) || {};
+
+function save(){
+  localStorage.setItem('calendarTasks', JSON.stringify(data));
+  localStorage.setItem('selectedDate', selectedDate);
+}
+
+function getEmoji(text){
+  text = text.toLowerCase();
+  if(text.includes('amor') || text.includes('autoestima')) return '💖';
+  if(text.includes('gym') || text.includes('ejercicio')) return '🏋️‍♀️';
+  if(text.includes('música')) return '🎵';
+  if(text.includes('comida') || text.includes('rico')) return '🍔';
+  return '✨';
+}
+
+function changeDay(){
+  selectedDate = document.getElementById('datePicker').value;
+  save();
+  render();
+}
+
+function addTask(){
+  const input = document.getElementById('input');
+  if(input.value.trim()==='') return;
+
+  if(!data[selectedDate]) data[selectedDate] = [];
+
+  data[selectedDate].push({text:input.value, done:false, emoji:getEmoji(input.value)});
+  input.value='';
+  save();
+  render();
+}
+
+function toggle(i, element){
+  data[selectedDate][i].done = !data[selectedDate][i].done;
+
+  // animación
+  element.classList.add('pop');
+  createHearts(element);
+
+  setTimeout(()=>element.classList.remove('pop'),400);
+
+  save();
+  render();
+}
+
+function createHearts(el){
+  for(let i=0;i<3;i++){
+    const heart = document.createElement('div');
+    heart.className='heart';
+    heart.textContent='💖';
+
+    const rect = el.getBoundingClientRect();
+    heart.style.left = rect.left + Math.random()*50 + 'px';
+    heart.style.top = rect.top + 'px';
+
+    document.body.appendChild(heart);
+
+    setTimeout(()=>heart.remove(),1000);
+  }
+}
+
+function remove(i){
+  data[selectedDate].splice(i,1);
+  save();
+  render();
+}
+
+function render(){
+  document.getElementById('datePicker').value = selectedDate;
+
+  const container = document.getElementById('dayContainer');
+  container.innerHTML='';
+
+  const block = document.createElement('div');
+  block.className='day-block';
+
+  block.innerHTML = `
+    <input id="input" placeholder="Meta del día 💭">
+    <button onclick="addTask()">+</button>
+    <ul id="list"></ul>
+  `;
+
+  container.appendChild(block);
+
+  const list = block.querySelector('#list');
+  const tasks = data[selectedDate] || [];
+
+  tasks.forEach((t,i)=>{
+    const li = document.createElement('li');
+    li.className = t.done ? 'completed':'';
+
+    li.innerHTML = `${t.emoji} ${t.text} <span style="color:#ff4da6" onclick="event.stopPropagation();remove(${i})">✖</span>`;
+
+    li.onclick = ()=>toggle(i, li);
+    list.appendChild(li);
+  });
+}
+
+render();
+</script>
+
+</body>
+</html>
